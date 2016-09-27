@@ -4,11 +4,12 @@
 #
 
 echo "Post Merge"
+
 changed_files=(`git diff-tree -r --name-status ORIG_HEAD HEAD`)
 #length_file=${#changed_files[@]}
-add_files=""
-del_files=""
-mod_files=""
+files_add=""
+files_del=""
+files_mod=""
 
 p4_initialize() {
     echo "p4 set P4CLIENT=$1"
@@ -19,52 +20,52 @@ p4_revert_unchanged() {
 }
 
 p4_add() {
-    echo "p4 add $1"
+    echo "p4 -x add $1"
 }
 
 p4_delete() {
-    echo "p4 delete $1"
+    echo "p4 -x delete $1"
 }
 
 p4_modify() {
-    echo "p4 edit $1"
+    echo "p4 -x edit $1"
 }
 
 p4_submit() {
     echo "p4 submit"
 }
 
-collect_source() {
+collect_files() {
     local action=0
     for tag in ${changed_files[@]}
     do
         case ${tag} in
-            M) action=0;;
-            A) action=1;;
-            D) action=2;;
+            M) action=0;; # Modify
+            A) action=1;; # Add
+            D) action=2;; # Delete
             *)
                 case ${action} in
-                    0) mod_files+="${tag} ";;
-                    1) add_files+="${tag} ";;
-                    2) del_files+="${tag} ";;
-                    *) echo "No action";;
+                    0) files_mod+="${tag} ";; # Modify
+                    1) files_add+="${tag} ";; # Add
+                    2) files_del+="${tag} ";; # Delete
+                    *) echo "No action for : ${tag}";; # Unknow
                 esac
                 ;;
         esac
     done
 }
 
-p4_open_source() {
-    if [ "${add_files}" != "" ]; then
-        p4_add "${add_files}"
+p4_open_files() {
+    if [ "${files_add}" != "" ]; then
+        p4_add "${files_add}"
     fi
 
-    if [ "${del_files}" != "" ]; then
-        p4_delete "${del_files}"
+    if [ "${files_del}" != "" ]; then
+        p4_delete "${files_del}"
     fi
 
-    if [ "${mod_files}" != "" ]; then
-        p4_modify "${mod_files}"
+    if [ "${files_mod}" != "" ]; then
+        p4_modify "${files_mod}"
     fi
 }
 
@@ -72,9 +73,9 @@ _main() {
     # Todo for user login etc..
     p4_initialize "OpenHMI_Native_MeHu_HISHL061_share"
 
-    collect_source
+    collect_files
 
-    p4_open_source 
+    p4_open_files
     p4_revert_unchanged
     p4_submit
 }
