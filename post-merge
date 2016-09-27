@@ -9,6 +9,10 @@ p4_initialize() {
     echo "p4 set P4CLIENT=$1"
 }
 
+p4_revert_unchanged() {
+    echo "p4 revert -a"
+}
+
 p4_add() {
     echo "p4 add $1"
 }
@@ -25,7 +29,7 @@ p4_submit() {
     echo "p4 submit"
 }
 
-f_main() {
+_main() {
     p4_initialize "OpenHMI_Native_MeHu_HISHL061_share"
 
     local action=0
@@ -60,10 +64,11 @@ f_main() {
         esac
     done
 
+    p4_revert_unchanged
     p4_submit
 }
 
-f_main
+_main
 
 #length_file=${#changed_files[@]}
 
