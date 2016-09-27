@@ -12,7 +12,9 @@ files_del=""
 files_mod=""
 
 p4_initialize() {
-    echo "p4 set P4CLIENT=$1"
+    echo "p4 set P4USER=$1"
+    echo "p4 set P4PASSWD=$2"
+    echo "p4 set P4CLIENT=$3"
 }
 
 p4_revert_unchanged() {
@@ -67,11 +69,16 @@ p4_open_files() {
     if [ "${files_mod}" != "" ]; then
         p4_modify "${files_mod}"
     fi
+
+    # show opened files
+    echo "========= opened files =========="
+    p4 opened
+    echo "================================="
 }
 
 _main() {
     # Todo for user login etc..
-    p4_initialize "OpenHMI_Native_MeHu_HISHL061_share"
+    p4_initialize "MeHu" "Asdf1234" "OpenHMI_Native_MeHu_HISHL061_share"
 
     collect_files
 
