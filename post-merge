@@ -29,41 +29,51 @@ p4_submit() {
     echo "p4 submit"
 }
 
-_main() {
-    p4_initialize "OpenHMI_Native_MeHu_HISHL061_share"
+add_files=""
+del_files=""
+mod_files=""
 
+collect_source() {
     local action=0
     for tag in ${changed_files[@]}
     do
         case ${tag} in
-            M)
-                action=0
-                ;;
-            A)
-                action=1
-                ;;
-            D)
-                action=2
-                ;;
+            M) action=0;;
+            A) action=1;;
+            D) action=2;;
             *)
                 case ${action} in
-                    0)
-                        p4_modify ${tag}
-                        ;;
-                    1)
-                        p4_add ${tag}
-                        ;;
-                    2)
-                        p4_delete ${tag}
-                        ;;
-                    *)
-                        echo "No action"
-                        ;;
+                    0) mod_files+="${tag}";;
+                    1) add_files+="${tag}";;
+                    2) del_files+="${tag}";;
+                    *) echo "No action";;
                 esac
                 ;;
         esac
     done
+}
 
+p4_open_source() {
+    if [ "${add_files}" != "" ]; then
+        p4_add ${add_files}
+    fi
+
+    if [ "${del_files}" != "" ]; then
+        p4_delete ${del_files}
+    fi
+
+    if [ "${mod_files}" != "" ]; then
+        p4_modify ${mod_files}
+    fi
+}
+
+_main() {
+    # Todo for user login etc..
+    p4_initialize "OpenHMI_Native_MeHu_HISHL061_share"
+
+    collect_source
+
+    p4_open_source 
     p4_revert_unchanged
     p4_submit
 }
