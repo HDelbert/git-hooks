@@ -1,9 +1,14 @@
 #!/bin/sh
 #
 # To enable this hook, rename this file to "post-merge".
+#
 
 echo "Post Merge"
 changed_files=(`git diff-tree -r --name-status ORIG_HEAD HEAD`)
+#length_file=${#changed_files[@]}
+add_files=""
+del_files=""
+mod_files=""
 
 p4_initialize() {
     echo "p4 set P4CLIENT=$1"
@@ -29,10 +34,6 @@ p4_submit() {
     echo "p4 submit"
 }
 
-add_files=""
-del_files=""
-mod_files=""
-
 collect_source() {
     local action=0
     for tag in ${changed_files[@]}
@@ -43,9 +44,9 @@ collect_source() {
             D) action=2;;
             *)
                 case ${action} in
-                    0) mod_files+="${tag}";;
-                    1) add_files+="${tag}";;
-                    2) del_files+="${tag}";;
+                    0) mod_files+="${tag} ";;
+                    1) add_files+="${tag} ";;
+                    2) del_files+="${tag} ";;
                     *) echo "No action";;
                 esac
                 ;;
@@ -55,15 +56,15 @@ collect_source() {
 
 p4_open_source() {
     if [ "${add_files}" != "" ]; then
-        p4_add ${add_files}
+        p4_add "${add_files}"
     fi
 
     if [ "${del_files}" != "" ]; then
-        p4_delete ${del_files}
+        p4_delete "${del_files}"
     fi
 
     if [ "${mod_files}" != "" ]; then
-        p4_modify ${mod_files}
+        p4_modify "${mod_files}"
     fi
 }
 
@@ -79,6 +80,4 @@ _main() {
 }
 
 _main
-
-#length_file=${#changed_files[@]}
 
