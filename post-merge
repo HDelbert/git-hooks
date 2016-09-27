@@ -57,13 +57,14 @@ collect_files() {
     done
 }
 
+# First delete, then add. It is for rename action.
 p4_open_files() {
-    if [ "${files_add}" != "" ]; then
-        p4_add "${files_add}"
-    fi
-
     if [ "${files_del}" != "" ]; then
         p4_delete "${files_del}"
+    fi
+
+    if [ "${files_add}" != "" ]; then
+        p4_add "${files_add}"
     fi
 
     if [ "${files_mod}" != "" ]; then
