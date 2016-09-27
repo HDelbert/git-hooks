@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# To enable this hook, rename this file to "post-merge".
+
+echo "Post Merge"
+changed_files=(`git diff-tree -r --name-status ORIG_HEAD HEAD`)
+
+p4_initialize() {
+    echo "p4 set P4CLIENT=$1"
+}
+
+p4_add() {
+    echo "p4 add $1"
+}
+
+p4_delete() {
+    echo "p4 delete $1"
+}
+
+p4_modify() {
+    echo "p4 edit $1"
+}
+
+p4_submit() {
+    echo "p4 submit"
+}
+
+f_main() {
+    p4_initialize "OpenHMI_Native_MeHu_HISHL061_share"
+
+    local action=0
+    for tag in ${changed_files[@]}
+    do
+        case ${tag} in
+            M)
+                action=0
+                ;;
+            A)
+                action=1
+                ;;
+            D)
+                action=2
+                ;;
+            *)
+                case ${action} in
+                    0)
+                        p4_modify ${tag}
+                        ;;
+                    1)
+                        p4_add ${tag}
+                        ;;
+                    2)
+                        p4_delete ${tag}
+                        ;;
+                    *)
+                        echo "No action"
+                        ;;
+                esac
+                ;;
+        esac
+    done
+
+    p4_submit
+}
+
+f_main
+
+#length_file=${#changed_files[@]}
+
