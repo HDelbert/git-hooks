@@ -23,15 +23,15 @@ p4_revert_unchanged() {
 }
 
 p4_add() {
-    echo "p4 -x add $1"
+    echo "p4 -x - add $1"
 }
 
 p4_delete() {
-    echo "p4 delete $1"
+    echo "p4 -x - delete $1"
 }
 
 p4_modify() {
-    echo "p4 edit $1"
+    echo "p4 -x - edit $1"
 }
 
 p4_submit() {
