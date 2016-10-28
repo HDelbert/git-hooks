@@ -3,6 +3,7 @@
 # To enable this hook, rename this file to "post-merge".
 #
 
+echo "============= P4 Submit ============="
 
 changed_files=(`git diff-tree -r --name-status ORIG_HEAD HEAD`)
 #length_file=${#changed_files[@]}
@@ -19,22 +20,27 @@ p4_initialize() {
 
 p4_revert_unchanged() {
     p4 revert -a
+#    echo "p4 revert -a"
 }
 
 p4_add() {
-    p4 -x - add $1
+    p4 add $1
+#    echo "p4 add $1"
 }
 
 p4_delete() {
     p4 delete $1
+#    echo "p4 delete $1"
 }
 
 p4_modify() {
     p4 edit $1
+#    echo "p4 edit $1"
 }
 
 p4_submit() {
     p4 submit
+#    echo "p4 submit"
 }
 
 collect_files() {
@@ -42,14 +48,14 @@ collect_files() {
     for tag in ${changed_files[@]}
     do
         case ${tag} in
-            M) action=0;; # Modify
-            A) action=1;; # Add
-            D) action=2;; # Delete
+            M) action=1;; # Modify
+            A) action=2;; # Add
+            D) action=3;; # Delete
             *)
                 case ${action} in
-                    0) files_mod+="${tag} ";; # Modify
-                    1) files_add+="${tag} ";; # Add
-                    2) files_del+="${tag} ";; # Delete
+                    1) files_mod+="${tag} ";; # Modify
+                    2) files_add+="${tag} ";; # Add
+                    3) files_del+="${tag} ";; # Delete
                     *) echo "No action for : ${tag}";; # Unknow
                 esac
                 ;;
@@ -79,7 +85,7 @@ p4_open_files() {
 
 _main() {
     # Todo for user login etc..
-#    p4_initialize "MeHu" "Asdf1234" "OpenHMI_Native_MeHu_HISHL061_share"
+    p4_initialize "MeHu" "Asdf1234" "OpenHMI_Native_MeHu_HISHL061_share"
 
     collect_files
 
@@ -88,7 +94,5 @@ _main() {
     p4_submit
 }
 
-echo "============= P4 Submit ============="
 _main
-echo "====================================="
 
