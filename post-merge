@@ -6,13 +6,13 @@
 echo "============= P4 Submit ============="
 
 changed_files=(`git diff-tree -r --name-status ORIG_HEAD HEAD`)
-#length_file=${#changed_files[@]}
 
 files_add=""
 files_del=""
 files_mod=""
 
 p4_initialize() {
+    # TODO
     echo "p4 set P4USER=$1"
     echo "p4 set P4PASSWD=$2"
     echo "p4 set P4CLIENT=$3"
@@ -85,7 +85,7 @@ p4_open_files() {
 
 _main() {
     # Todo for user login etc..
-    p4_initialize "MeHu" "Asdf1234" "OpenHMI_Native_MeHu_HISHL061_share"
+    p4_initialize "UserName" "Password" "CLIENT"
 
     collect_files
 
